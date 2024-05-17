@@ -6,9 +6,9 @@ import random
 import numpy as np
 
 
-def base_drawing_img():
+def base_drawing_img(img_path):
     # Assuming 'img' is your loaded image
-    img = io.imread("drawing_4.png")
+    img = io.imread(img_path)
     gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
     # Apply GaussianBlur to reduce image noise in the edge detected image
@@ -38,10 +38,10 @@ def base_drawing_img():
     return blended_img
 
 
-def base_drawing_img_without_edge_detection():
+def base_drawing_img_without_edge_detection(img_path: str):
 
     # Assuming 'img' is your loaded image
-    img = io.imread("drawing_4.png")
+    img = io.imread(img_path)
 
     gray_img_2 = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
@@ -54,9 +54,9 @@ def base_drawing_img_without_edge_detection():
     return bw_img_colored_2
 
 
-def process_img():
+def process_img(img_path: str):
     print("Launching magic drawing script")
-    img = io.imread("drawing_4.png")
+    img = io.imread(img_path)
 
     # Create a figure and a 1x2 grid of subplots
     fig, axes = plt.subplots(1, 2, figsize=(12, 6))
@@ -66,7 +66,7 @@ def process_img():
     axes[0].set_title("Original Image")
     axes[0].axis("off")  # Turn off axis numbers and ticks
 
-    blended_img = base_drawing_img_without_edge_detection()
+    blended_img = base_drawing_img_without_edge_detection(img_path)
 
     # Convert image to HSV color space
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
