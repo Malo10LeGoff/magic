@@ -54,7 +54,7 @@ def base_drawing_img_without_edge_detection(img_path: str):
     return bw_img_colored_2
 
 
-def process_img(img_path: str):
+def process_img(img_path: str, outputs):
     print("Launching magic drawing script")
     img = io.imread(img_path)
 
@@ -82,7 +82,7 @@ def process_img(img_path: str):
         (166, 180),
     ]
     colors = ["red", "ora", "yel", "gre", "lblue", "dblue", "pur", "red"]
-    values = ["7+3", "4+5", "4+4", "5+2", "0+6", "4+1", "2+1", "7+3"]
+    values = outputs + [outputs[0]]
 
     for i, hue in enumerate(hues):
         print("Analyzing color " + str(colors[i]))
@@ -93,8 +93,6 @@ def process_img(img_path: str):
         # Label connected components
         labels = measure.label(mask, connectivity=2)
         props = measure.regionprops(labels)
-
-        largest_regions = sorted(props, key=lambda x: x.area, reverse=True)
 
         # Define a minimum area threshold
         min_area = 1000  # Adjust this value to your needs
@@ -117,7 +115,7 @@ def process_img(img_path: str):
             # Overlay text on the original image at the centroid of each mask
             cv2.putText(
                 blended_img,
-                colors[i],
+                values[i],
                 (x, y),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,

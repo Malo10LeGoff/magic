@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import io, measure
-from tkinter import Tk, Canvas, NW, Button, ttk, Label, Listbox, filedialog, NW
+from tkinter import Tk, Canvas, NW, Button, ttk, Label, Frame, filedialog, NW, Entry
 from PIL import Image, ImageTk
 import random  # Import random for random selection
 from image_utils import (
@@ -10,9 +10,22 @@ from image_utils import (
 )
 
 
+def focus_entry(event):
+    print("focusing mf")
+    event.widget.focus_set()
+
+
+def retrieve_entries(entries, outputs):
+    # This function retrieves the content of all entries
+    for index, entry in enumerate(entries, start=1):
+        user_input = entry.get()  # Get the content of the entry
+        outputs.append(user_input)
+        print(f"Content of Entry {index}: {user_input}")
+
+
 def open_image(canvas, img_path):
     # Open file dialog and get the filename
-    print("cc")
+    print("ccooo")
     file_types = [
         ("PNG files", "*.png"),
         ("JPEG files", "*.jpg"),
@@ -79,7 +92,7 @@ if __name__ == "__main__":
     label.grid(row=0, column=0, sticky="NW", padx=10, pady=10)
 
     # Configure grid column weights (0, 1, 2, 3 - four columns in total)
-    window.columnconfigure(0, weight=1)
+    window.columnconfigure(0, weight=1, minsize=100)
     window.columnconfigure(1, weight=2)
     window.columnconfigure(2, weight=2)
     window.columnconfigure(3, weight=1)
@@ -99,24 +112,31 @@ if __name__ == "__main__":
     # Setup the second canvas as a placeholder
     canvas2 = Canvas(window, width=800, height=600, bg="grey")
     canvas2.grid(row=1, column=2, padx=(30, 0))
+    
+    # Frame to hold the entries and labels
+    entry_frame = Frame(window, bg="white")
+    entry_frame.grid(row=3, column=1, sticky="ew")
 
-    # Listbox for color selection
-    color_list = Listbox(window, height=10, width=15, bg="white", exportselection=0)
-    colors = [
-        "Red",
-        "Blue",
-        "Green",
-        "Yellow",
-        "Purple",
-        "Orange",
-    ]  # Add more colors as needed
-    for color in colors:
-        color_list.insert("end", color)
-    color_list.grid(row=2, column=0, sticky="W", padx=10)
+    # Labels and entries
+    outputs = []
+    entries = []
+    colors = ["Red", "Orange", "Yellow", "Green", "Light Blue", "Dark Blue", "Purple"]
+    for i, color in enumerate(colors, start=1):
+        label = Label(entry_frame, text=f"{color}:", font=('Arial', 12), bg='white', fg='black')
+        label.grid(row=i, column=0, sticky='e', padx=(10, 2), pady=5)
+
+        entry = Entry(entry_frame, font=('Arial', 12), bg='white', fg='black')
+        entry.config(state='normal')
+        entry.grid(row=i, column=1, sticky='ew', padx=(2, 10), pady=5)
+        entry.bind("<Button-1>", focus_entry)
+
+        entries.append(entry)
+    
+    entry_frame.columnconfigure(1, weight=1)
 
     def update_canvas2():
-        print("cc")
-        processed_img = process_img(img_path[0])  # Get the processed image
+        retrieve_entries(entries=entries, outputs=outputs)
+        processed_img = process_img(img_path[0], outputs)  # Get the processed image
         if processed_img is not None:
             # Convert the processed image to a format suitable for Tkinter
             processed_img = Image.fromarray(processed_img)
@@ -130,5 +150,5 @@ if __name__ == "__main__":
 
     # Add a button below the canvases
     button = ttk.Button(window, text="Process", command=update_canvas2, style="TButton")
-    button.grid(row=2, column=1)  # Span across both columns
+    button.grid(row=3, column=2)  # Span across both columns
     window.mainloop()  # Exits when the window is closed
