@@ -23,6 +23,15 @@ def retrieve_entries(entries, outputs):
         print(f"Content of Entry {index}: {user_input}")
 
 
+def save_image(processed_img):
+    # Ensure there is an image to save
+    filepath = filedialog.asksaveasfilename(defaultextension=".png",
+                                            filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
+    if filepath:  # If a file path is provided
+        processed_img.save(filepath)  # Save the image
+        print("Image saved successfully at:", filepath)
+
+
 def open_image(canvas, img_path):
     # Open file dialog and get the filename
     print("ccooo")
@@ -134,12 +143,15 @@ if __name__ == "__main__":
     
     entry_frame.columnconfigure(1, weight=1)
 
-    def update_canvas2():
+    img_tbd = []
+
+    def update_canvas2(img_tbd):
         retrieve_entries(entries=entries, outputs=outputs)
         processed_img = process_img(img_path[0], outputs)  # Get the processed image
         if processed_img is not None:
             # Convert the processed image to a format suitable for Tkinter
             processed_img = Image.fromarray(processed_img)
+            img_tbd.append(processed_img)
             imgtk2 = ImageTk.PhotoImage(image=processed_img)
             # Clear the previous image
             canvas2.delete("all")
@@ -149,6 +161,10 @@ if __name__ == "__main__":
             canvas2.image = imgtk2
 
     # Add a button below the canvases
-    button = ttk.Button(window, text="Process", command=update_canvas2, style="TButton")
+    button = ttk.Button(window, text="Process", command=lambda: update_canvas2(img_tbd=img_tbd), style="TButton")
     button.grid(row=3, column=2)  # Span across both columns
+
+    # Add a button to save the processed image
+    save_button = ttk.Button(window, text="Download Image", command=lambda: save_image(img_tbd[0]), style="TButton")
+    save_button.grid(row=4, column=2)  # Positioned below the process button
     window.mainloop()  # Exits when the window is closed
